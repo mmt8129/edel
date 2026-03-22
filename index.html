@@ -32,7 +32,7 @@
             top: 0;
             z-index: 100;
             background: #000000;
-            border-bottom: 3px solid #ffffff;  /* TAM BEYAZ ÇİZGİ */
+            border-bottom: 3px solid #ffffff;
             padding: 1rem 1.5rem;
         }
 
@@ -49,12 +49,12 @@
         .title-area h1 {
             font-size: 2.0rem;
             font-weight: 700;
-            color: #ffffff;  /* BEYAZ YAZI */
+            color: #ffffff;
         }
 
         .title-area p {
             font-size: 1.0rem;
-            color: #ffffff;  /* AÇIK BEYAZ */
+            color: #ffffff;
             margin-top: 4px;
         }
 
@@ -204,53 +204,91 @@
             padding-left: 1rem;
         }
 
+        /* TABLET: 2'li */
         @media (max-width: 900px) {
             .bench-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.2rem;
             }
             .btn {
-                padding: 0.4rem 1rem;
-                font-size: 0.75rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
             }
             .stats-area {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
                 gap: 0.8rem;
             }
+            .title-area h1 {
+                font-size: 1.6rem;
+            }
+            .title-area p {
+                font-size: 0.85rem;
+            }
         }
-        @media (max-width: 550px) {
-    .bench-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
-    .btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
-    }
-    .stats-area {
-        font-size: 0.65rem;
-        gap: 0.5rem;
-    }
-    .title-area h1 {
-        font-size: 1.4rem;
-    }
-    .title-area p {
-        font-size: 0.8rem;
-    }
-    .bench-name {
-        font-size: 1rem;
-    }
-    .bench-icon {
-        font-size: 1.5rem;
-    }
-    .check-mark {
-        font-size: 1rem;
-        top: 4px;
-        left: 8px;
-    }
-}
-            .banner-content {
-                flex-direction: column;
-                align-items: flex-start;
+        
+        /* TELEFON: 2'li (küçük ekranlar için) */
+        @media (max-width: 600px) {
+            .bench-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            .bench-card {
+                padding: 0.8rem 0.4rem;
+            }
+            .bench-name {
+                font-size: 1rem;
+            }
+            .bench-icon {
+                font-size: 1.5rem;
+                margin-bottom: 0.3rem;
+            }
+            .check-mark {
+                font-size: 1rem;
+                top: 4px;
+                left: 8px;
+            }
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.7rem;
+            }
+            .stats-area {
+                font-size: 0.6rem;
+                gap: 0.5rem;
+                padding: 0.3rem 0.8rem;
+            }
+            .title-area h1 {
+                font-size: 1.2rem;
+            }
+            .title-area p {
+                font-size: 0.7rem;
+            }
+            .sticky-banner {
+                padding: 0.8rem 1rem;
+            }
+            .dashboard {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+            .section-title {
+                font-size: 1rem;
+                margin: 0.5rem 0 1rem 0;
+            }
+        }
+        
+        /* ÇOK KÜÇÜK EKRANLAR (350px altı) için yine 2'li kalır, ama padding azalır */
+        @media (max-width: 380px) {
+            .bench-grid {
+                gap: 0.6rem;
+            }
+            .bench-name {
+                font-size: 0.9rem;
+            }
+            .bench-icon {
+                font-size: 1.3rem;
+            }
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.65rem;
             }
         }
 
@@ -297,9 +335,9 @@
             <p>ÜRETİM KAYIT GİRİŞ</p>
         </div>
         <div class="stats-area" id="statsArea">
-            <span>📊 TOPLAM TEZGAH: <span id="totalCount" class="count">0</span></span>
-            <span>✅ SEÇİLİ TEZGAH: <span id="selectedCount" class="count">0</span></span>
-            <span>❌ SEÇİLİ OLMAYAN TEZGAH: <span id="unselectedCount" class="count">0</span></span>
+            <span>📊 TOPLAM: <span id="totalCount" class="count">0</span></span>
+            <span>✅ SEÇİLİ: <span id="selectedCount" class="count">0</span></span>
+            <span>❌ SEÇİLMEYEN: <span id="unselectedCount" class="count">0</span></span>
         </div>
         <div class="button-group" id="buttonGroup"></div>
     </div>
