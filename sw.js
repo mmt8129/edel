@@ -7,7 +7,6 @@ const urlsToCache = [
   '/icon-512.png'
 ];
 
-// Install: cache dosyaları
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -15,7 +14,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// Fetch: önce cache, yoksa network
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
@@ -23,7 +21,6 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Activate: eski cache'leri temizle
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
