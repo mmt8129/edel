@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-
-    <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Tezgah Panosu">
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Tezgah Panosu | edelkrone</title>
+    
+    <!-- PWA META TAGS -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Tezgah Panosu">
+    
     <style>
         * {
             margin: 0;
@@ -259,9 +260,7 @@
             justify-content: center;
         }
     </style>
-   
 </head>
-  
 <body>
 
 <div class="sticky-banner">
@@ -371,7 +370,7 @@
             }
             saveToStorage();
         }
-        updateStats();  // istatistikleri güncelle
+        updateStats();
         render();
         return true;
     }
@@ -393,22 +392,20 @@
     }
 
     function updateStats() {
-        const totalBenches = benchesMaster.length;  // TS1 dahil
+        const totalBenches = benchesMaster.length;
         let selectedCount = 0;
         let unselectedCount = 0;
         
         if (currentMode === "showAllWithSplit") {
-            // Mod 3: pendingChanges'e göre
             benchesMaster.forEach(b => {
                 if (b.selectable) {
                     if (pendingChanges.has(b.benchId)) selectedCount++;
                     else unselectedCount++;
                 } else {
-                    unselectedCount++; // TS1 seçilemez
+                    unselectedCount++;
                 }
             });
         } else {
-            // Diğer modlar: selectedIds'e göre
             benchesMaster.forEach(b => {
                 if (b.selectable) {
                     if (selectedIds.has(b.benchId)) selectedCount++;
@@ -474,12 +471,10 @@
                     toggleSelect(bench, false);
                 } 
                 else if (mode === "showAllWithSplit") {
-                    // MOD 3: SADECE RENK DEĞİŞİR, YER DEĞİŞMEZ
                     if (!bench.selectable) {
                         showConfirmModal("Uyarı", `${bench.name} için ID girilmemiş.`, null, null);
                         return;
                     }
-                    // pendingChanges'i güncelle
                     if (pendingChanges.has(bench.benchId)) {
                         pendingChanges.delete(bench.benchId);
                         card.classList.remove('selected');
@@ -495,7 +490,7 @@
                             card.insertBefore(tickSpan, card.firstChild);
                         }
                     }
-                    updateStats();  // istatistikleri güncelle
+                    updateStats();
                 }
                 else if (mode === "showSelected") {
                     if (!bench.selectable) {
@@ -621,7 +616,7 @@
             attachCardEvents("showAllWithSplit");
         }
         
-        updateStats();  // her render sonunda istatistikleri güncelle
+        updateStats();
     }
     
     function init() {
@@ -634,13 +629,14 @@
     init();
 </script>
 
-    <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW registered:', reg))
-      .catch(err => console.log('SW error:', err));
-  }
+<!-- PWA SERVICE WORKER -->
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW kaydedildi:', reg))
+            .catch(err => console.log('SW hatası:', err));
+    }
 </script>
-    
+
 </body>
 </html>
