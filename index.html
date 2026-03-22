@@ -393,16 +393,22 @@
         }
     }
 
-    function loadFromStorage() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                const arr = JSON.parse(saved);
-                selectedIds.clear();
-                arr.forEach(id => selectedIds.add(id));
-            } catch(e) {}
-        }
+function loadFromStorage() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            selectedIds.clear();
+            if (data.selectedIds) {
+                data.selectedIds.forEach(id => selectedIds.add(id));
+            }
+            if (data.currentMode && data.currentMode !== "showAllWithSplit") {
+                // Mod 3 (showAllWithSplit) geçici bir mod, onu kaydetme
+                currentMode = data.currentMode;
+            }
+        } catch(e) {}
     }
+}
 
     function saveToStorage() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify([...selectedIds]));
