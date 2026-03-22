@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Kayı Giriş v1';
+const CACHE_NAME = 'tezgah-panosu-v1';
 const urlsToCache = [
   '/',
   '/index.html',
