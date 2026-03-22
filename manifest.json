@@ -1,7 +1,7 @@
 {
-  "name": "Kayıt Panosu",
-  "short_name": "Kayıt Gir",
-  "description": "EDELKRONE Kayıt Giriş",
+  "name": "Tezgah Panosu",
+  "short_name": "Tezgah",
+  "description": "edelkrone üretim tezgah seçim ve yönetim aracı",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
