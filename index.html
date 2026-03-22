@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tezgah Panosu | edelkrone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
+        }
+
+        body {
+            background: #000000;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* SABIT BANNER */
+        .sticky-banner {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #000000;
+            border-bottom: 3px solid #ffffff;  /* TAM BEYAZ ÇİZGİ */
+            padding: 1rem 1.5rem;
+        }
+
+        .banner-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-area h1 {
+            font-size: 2.0rem;
+            font-weight: 700;
+            color: #ffffff;  /* BEYAZ YAZI */
+        }
+
+        .title-area p {
+            font-size: 1.0rem;
+            color: #ffffff;  /* AÇIK BEYAZ */
+            margin-top: 4px;
+        }
+
+        .stats-area {
+            display: flex;
+            gap: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .stats-area span {
+            color: #ffffff;
+        }
+
+        .stats-area .count {
+            font-weight: 700;
+            color: #3498db;
+            margin-left: 0.3rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #3498db;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn:hover {
+            background: #5dade2;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn-danger:hover {
+            background: #ec7063;
+        }
+
+        .btn-secondary {
+            background: #555;
+        }
+        .btn-secondary:hover {
+            background: #777;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .bench-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .bench-card {
+            background: #1a1a1a;
+            border-radius: 1.2rem;
+            padding: 1.2rem 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #e74c3c;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            position: relative;
+            user-select: none;
+            color: #e74c3c;
+        }
+
+        .bench-card:active {
+            transform: translateY(3px);
+        }
+
+        .bench-card.selected {
+            background: #2e7d32;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .bench-card.selected .bench-name {
+            color: white;
+        }
+
+        .bench-card.selected .bench-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .check-mark {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 2px #000;
+        }
+
+        .bench-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .bench-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #e74c3c;
+        }
+
+        .divider {
+            margin: 2rem 0 1rem 0;
+            border-top: 3px solid white;
+            width: 100%;
+        }
+
+        .section-title {
+            color: #ccc;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1rem 0 1.5rem 0;
+            text-align: left;
+            border-left: 4px solid #3498db;
+            padding-left: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .bench-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.75rem;
+            }
+            .stats-area {
+                font-size: 0.7rem;
+                gap: 0.8rem;
+            }
+        }
+        @media (max-width: 550px) {
+            .bench-grid {
+                grid-template-columns: 1fr;
+            }
+            .banner-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .confirm-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+        }
+        .confirm-modal-container {
+            background: #1e1e1e;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            max-width: 340px;
+            width: 80%;
+            text-align: center;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+            border: 1px solid #444;
+        }
+        .confirm-modal-container p {
+            color: white;
+            margin-bottom: 1.8rem;
+            font-size: 1rem;
+        }
+        .confirm-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sticky-banner">
+    <div class="banner-content">
+        <div class="title-area">
+            <h1>⚙️ TEZGAH PANOSU</h1>
+            <p>ÜRETİM KAYIT GİRİŞ</p>
+        </div>
+        <div class="stats-area" id="statsArea">
+            <span>📊 TOPLAM TEZGAH: <span id="totalCount" class="count">0</span></span>
+            <span>✅ SEÇİLİ TEZGAH: <span id="selectedCount" class="count">0</span></span>
+            <span>❌ SEÇİLİ OLMAYAN TEZGAH: <span id="unselectedCount" class="count">0</span></span>
+        </div>
+        <div class="button-group" id="buttonGroup"></div>
+    </div>
+</div>
+
+<div class="dashboard" id="dashboard"></div>
+
+<script>
+    const benchesMaster = [
+        { name: "3A", benchId: 26, selectable: true },
+        { name: "4A", benchId: 21, selectable: true },
+        { name: "4B", benchId: 11, selectable: true },
+        { name: "4C", benchId: 12, selectable: true },
+        { name: "3B", benchId: 36, selectable: true },
+        { name: "3C", benchId: 30, selectable: true },
+        { name: "3D", benchId: 31, selectable: true },
+        { name: "5D", benchId: 14, selectable: true },
+        { name: "5C", benchId: 10, selectable: true },
+        { name: "TORNA1", benchId: 17, selectable: true },
+        { name: "TORNA2", benchId: 18, selectable: true },
+        { name: "TORNA3", benchId: 43, selectable: true },
+        { name: "TORNA4", benchId: 2, selectable: true },
+        { name: "3E", benchId: 35, selectable: true },
+        { name: "K1", benchId: 33, selectable: true },
+        { name: "5I", benchId: 42, selectable: true },
+        { name: "5H", benchId: 41, selectable: true },
+        { name: "5G", benchId: 40, selectable: true },
+        { name: "5F", benchId: 39, selectable: true },
+        { name: "5E", benchId: 29, selectable: true },
+        { name: "TS1", benchId: null, selectable: false }
+    ];
+
+    const STORAGE_KEY = "edelkrone_bench_selections";
+    const BASE_URL = "https://uys.edelkrone.com/Manufacturing/ProductionRecords/Create?benchId=";
+
+    let currentMode = "edit";
+    let selectedIds = new Set();
+    let pendingChanges = new Set();
+
+    function isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    function openLink(url) {
+        if (isMobile()) {
+            window.open(url, '_blank');
+        } else {
+            const width = 1000;
+            const height = 800;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            window.open(url, 'tezgahDetay', `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
+        }
+    }
+
+    function loadFromStorage() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                const arr = JSON.parse(saved);
+                selectedIds.clear();
+                arr.forEach(id => selectedIds.add(id));
+            } catch(e) {}
+        }
+    }
+
+    function saveToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...selectedIds]));
+    }
+
+    function isSelected(bench, usePending = false) {
+        if (!bench.selectable) return false;
+        if (usePending && currentMode === "showAllWithSplit") {
+            return pendingChanges.has(bench.benchId);
+        }
+        return selectedIds.has(bench.benchId);
+    }
+
+    function toggleSelect(bench, usePending = false) {
+        if (!bench.selectable) {
+            showConfirmModal("Uyarı", `${bench.name} için tezgah ID'si henüz girilmemiş.`, null, null);
+            return false;
+        }
+        if (usePending && currentMode === "showAllWithSplit") {
+            if (pendingChanges.has(bench.benchId)) {
+                pendingChanges.delete(bench.benchId);
+            } else {
+                pendingChanges.add(bench.benchId);
+            }
+        } else {
+            if (selectedIds.has(bench.benchId)) {
+                selectedIds.delete(bench.benchId);
+            } else {
+                selectedIds.add(bench.benchId);
+            }
+            saveToStorage();
+        }
+        updateStats();  // istatistikleri güncelle
+        render();
+        return true;
+    }
+
+    function selectAll() {
+        benchesMaster.forEach(b => {
+            if (b.selectable) selectedIds.add(b.benchId);
+        });
+        saveToStorage();
+        updateStats();
+        render();
+    }
+
+    function clearAll() {
+        selectedIds.clear();
+        saveToStorage();
+        updateStats();
+        render();
+    }
+
+    function updateStats() {
+        const totalBenches = benchesMaster.length;  // TS1 dahil
+        let selectedCount = 0;
+        let unselectedCount = 0;
+        
+        if (currentMode === "showAllWithSplit") {
+            // Mod 3: pendingChanges'e göre
+            benchesMaster.forEach(b => {
+                if (b.selectable) {
+                    if (pendingChanges.has(b.benchId)) selectedCount++;
+                    else unselectedCount++;
+                } else {
+                    unselectedCount++; // TS1 seçilemez
+                }
+            });
+        } else {
+            // Diğer modlar: selectedIds'e göre
+            benchesMaster.forEach(b => {
+                if (b.selectable) {
+                    if (selectedIds.has(b.benchId)) selectedCount++;
+                    else unselectedCount++;
+                } else {
+                    unselectedCount++;
+                }
+            });
+        }
+        
+        document.getElementById('totalCount').innerText = totalBenches;
+        document.getElementById('selectedCount').innerText = selectedCount;
+        document.getElementById('unselectedCount').innerText = unselectedCount;
+    }
+
+    function showConfirmModal(title, message, onConfirm, onCancel = null) {
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'confirm-modal-overlay';
+        modalDiv.innerHTML = `
+            <div class="confirm-modal-container">
+                <p><strong>${title}</strong><br>${message}</p>
+                <div class="confirm-modal-buttons">
+                    <button class="btn" id="modalConfirm">Tamam</button>
+                    <button class="btn btn-danger" id="modalCancel">İptal</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        
+        document.getElementById('modalConfirm').onclick = () => {
+            if (onConfirm) onConfirm();
+            modalDiv.remove();
+        };
+        document.getElementById('modalCancel').onclick = () => {
+            if (onCancel) onCancel();
+            modalDiv.remove();
+        };
+    }
+
+    function renderCard(bench, isSelectedFlag, showTick = true) {
+        const selectedClass = isSelectedFlag ? "selected" : "";
+        const tickHtml = (isSelectedFlag && showTick) ? `<div class="check-mark">✓</div>` : "";
+        const icon = "🔧";
+        
+        return `
+            <div class="bench-card ${selectedClass}" data-name="${bench.name}" data-id="${bench.benchId}" data-selectable="${bench.selectable}">
+                ${tickHtml}
+                <div class="bench-icon">${icon}</div>
+                <div class="bench-name">${bench.name}</div>
+            </div>
+        `;
+    }
+
+    function attachCardEvents(mode) {
+        document.querySelectorAll('.bench-card').forEach(card => {
+            const benchName = card.getAttribute('data-name');
+            const bench = benchesMaster.find(b => b.name === benchName);
+            if (!bench) return;
+            
+            card.onclick = (e) => {
+                e.stopPropagation();
+                if (mode === "edit") {
+                    toggleSelect(bench, false);
+                } 
+                else if (mode === "showAllWithSplit") {
+                    // MOD 3: SADECE RENK DEĞİŞİR, YER DEĞİŞMEZ
+                    if (!bench.selectable) {
+                        showConfirmModal("Uyarı", `${bench.name} için ID girilmemiş.`, null, null);
+                        return;
+                    }
+                    // pendingChanges'i güncelle
+                    if (pendingChanges.has(bench.benchId)) {
+                        pendingChanges.delete(bench.benchId);
+                        card.classList.remove('selected');
+                        const tick = card.querySelector('.check-mark');
+                        if (tick) tick.remove();
+                    } else {
+                        pendingChanges.add(bench.benchId);
+                        card.classList.add('selected');
+                        if (!card.querySelector('.check-mark')) {
+                            const tickSpan = document.createElement('div');
+                            tickSpan.className = 'check-mark';
+                            tickSpan.innerText = '✓';
+                            card.insertBefore(tickSpan, card.firstChild);
+                        }
+                    }
+                    updateStats();  // istatistikleri güncelle
+                }
+                else if (mode === "showSelected") {
+                    if (!bench.selectable) {
+                        showConfirmModal("Uyarı", `${bench.name} için ID bulunamadı.`, null, null);
+                        return;
+                    }
+                    const url = BASE_URL + bench.benchId;
+                    openLink(url);
+                }
+            };
+        });
+    }
+
+    function render() {
+        const dashboard = document.getElementById('dashboard');
+        const buttonGroup = document.getElementById('buttonGroup');
+        if (!dashboard) return;
+        
+        buttonGroup.innerHTML = '';
+        
+        if (currentMode === "edit") {
+            buttonGroup.innerHTML = `
+                <button class="btn" id="btnSelectAll">Tümünü Seç</button>
+                <button class="btn" id="btnClearAll">Tümü İptal</button>
+                <button class="btn" id="btnConfirm">Tamam</button>
+                <button class="btn btn-danger" id="btnResetAll">Sıfırla</button>
+            `;
+            document.getElementById('btnSelectAll')?.addEventListener('click', () => selectAll());
+            document.getElementById('btnClearAll')?.addEventListener('click', () => clearAll());
+            document.getElementById('btnConfirm')?.addEventListener('click', () => {
+                if (selectedIds.size === 0) {
+                    showConfirmModal("Uyarı", "Hiçbir tezgah seçili değil. Seçim yapmadan devam edemezsiniz.", null, null);
+                    return;
+                }
+                currentMode = "showSelected";
+                updateStats();
+                render();
+            });
+            document.getElementById('btnResetAll')?.addEventListener('click', () => {
+                showConfirmModal("Sıfırla", "Tüm tezgah seçimleri silinecek ve ana ekrana dönülecek. Onaylıyor musunuz?", () => {
+                    clearAll();
+                    currentMode = "edit";
+                    updateStats();
+                    render();
+                });
+            });
+            
+            const allBenches = [...benchesMaster];
+            dashboard.innerHTML = `<div class="bench-grid">${allBenches.map(b => renderCard(b, isSelected(b, false), true)).join('')}</div>`;
+            attachCardEvents("edit");
+        }
+        else if (currentMode === "showSelected") {
+            buttonGroup.innerHTML = `
+                <button class="btn" id="btnShowAllBenches">Tüm Tezgahları Göster</button>
+                <button class="btn btn-danger" id="btnResetAllMode2">Sıfırla</button>
+            `;
+            document.getElementById('btnShowAllBenches')?.addEventListener('click', () => {
+                pendingChanges.clear();
+                selectedIds.forEach(id => pendingChanges.add(id));
+                currentMode = "showAllWithSplit";
+                updateStats();
+                render();
+            });
+            document.getElementById('btnResetAllMode2')?.addEventListener('click', () => {
+                showConfirmModal("Sıfırla", "Tüm seçimler silinecek ve ana ekrana dönülecek. Onaylıyor musunuz?", () => {
+                    clearAll();
+                    currentMode = "edit";
+                    updateStats();
+                    render();
+                });
+            });
+            
+            const selectedBenches = benchesMaster.filter(b => isSelected(b, false));
+            if (selectedBenches.length === 0) {
+                dashboard.innerHTML = `<div style="text-align:center; color:#aaa;">Henüz seçili tezgah yok. Ana ekrandan seçim yapın.</div>`;
+            } else {
+                dashboard.innerHTML = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true)).join('')}</div>`;
+                attachCardEvents("showSelected");
+            }
+        }
+        else if (currentMode === "showAllWithSplit") {
+            buttonGroup.innerHTML = `
+                <button class="btn" id="btnSaveMode3">Kaydet</button>
+                <button class="btn btn-secondary" id="btnCancelMode3">İptal</button>
+                <button class="btn btn-danger" id="btnResetAllMode3">Sıfırla</button>
+            `;
+            
+            document.getElementById('btnSaveMode3')?.addEventListener('click', () => {
+                selectedIds.clear();
+                pendingChanges.forEach(id => selectedIds.add(id));
+                saveToStorage();
+                currentMode = "showSelected";
+                updateStats();
+                render();
+            });
+            document.getElementById('btnCancelMode3')?.addEventListener('click', () => {
+                currentMode = "showSelected";
+                updateStats();
+                render();
+            });
+            document.getElementById('btnResetAllMode3')?.addEventListener('click', () => {
+                showConfirmModal("Sıfırla", "Tüm seçimler silinecek ve ana ekrana dönülecek. Onaylıyor musunuz?", () => {
+                    clearAll();
+                    currentMode = "edit";
+                    updateStats();
+                    render();
+                });
+            });
+            
+            const selectedBenches = benchesMaster.filter(b => isSelected(b, true));
+            const unselectedBenches = benchesMaster.filter(b => !isSelected(b, true) && b.selectable);
+            const ts1Bench = benchesMaster.find(b => b.name === "TS1");
+            
+            let html = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true)).join('')}</div>`;
+            if (unselectedBenches.length > 0 || (ts1Bench && !ts1Bench.selectable)) {
+                html += `<div class="divider"></div>`;
+                html += `<div class="section-title">📌 Seçilmemiş Tezgahlar</div>`;
+                const unselectedList = [...unselectedBenches];
+                if (ts1Bench && !ts1Bench.selectable) unselectedList.push(ts1Bench);
+                html += `<div class="bench-grid">${unselectedList.map(b => renderCard(b, false, false)).join('')}</div>`;
+            }
+            dashboard.innerHTML = html;
+            attachCardEvents("showAllWithSplit");
+        }
+        
+        updateStats();  // her render sonunda istatistikleri güncelle
+    }
+    
+    function init() {
+        loadFromStorage();
+        currentMode = "edit";
+        updateStats();
+        render();
+    }
+    
+    init();
+</script>
+</body>
+</html>
