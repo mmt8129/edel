@@ -174,6 +174,25 @@
             text-shadow: 0 0 2px #000;
         }
 
+        /* Sağ alt köşe zaman etiketi */
+        .click-time {
+            position: absolute;
+            bottom: 6px;
+            right: 10px;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.7);
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .bench-card.selected .click-time {
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.4);
+        }
+
         .bench-icon {
             font-size: 2rem;
             display: block;
@@ -243,6 +262,12 @@
                 font-size: 1rem;
                 top: 4px;
                 left: 8px;
+            }
+            .click-time {
+                font-size: 0.55rem;
+                bottom: 4px;
+                right: 6px;
+                padding: 1px 4px;
             }
             .btn {
                 padding: 0.4rem 0.8rem;
@@ -367,6 +392,7 @@
     ];
 
     const STORAGE_KEY = "edelkrone_bench_selections";
+    const CLICK_STORAGE_KEY = "edelkrone_bench_clicks";
     const BASE_URL = "https://uys.edelkrone.com/Manufacturing/ProductionRecords/Create?benchId=";
 
     let currentMode = "edit";
@@ -377,7 +403,33 @@
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    function openLink(url) {
+    // Tıklanma zamanını kaydet
+    function saveClickTime(benchId) {
+        if (!benchId) return;
+        const clicks = JSON.parse(localStorage.getItem(CLICK_STORAGE_KEY) || "{}");
+        clicks[benchId] = new Date().toISOString();
+        localStorage.setItem(CLICK_STORAGE_KEY, JSON.stringify(clicks));
+    }
+
+    // Tıklanma zamanını formatla (örn: 18 Mar 20:33)
+    function getFormattedClickTime(benchId) {
+        if (!benchId) return "";
+        const clicks = JSON.parse(localStorage.getItem(CLICK_STORAGE_KEY) || "{}");
+        const isoString = clicks[benchId];
+        if (!isoString) return "";
+        
+        const date = new Date(isoString);
+        const day = date.getDate();
+        const month = date.toLocaleString('tr-TR', { month: 'short' }).replace('.', '');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${day} ${month} ${hours}:${minutes}`;
+    }
+
+    function openLink(url, benchId) {
+        if (benchId) {
+            saveClickTime(benchId);
+        }
         if (isMobile()) {
             window.open(url, '_blank');
         } else {
@@ -401,7 +453,6 @@
                 if (data.currentMode && data.currentMode !== "showAllWithSplit") {
                     currentMode = data.currentMode;
                 } else {
-                    // Eğer kayıtlı mod yoksa veya showAllWithSplit ise, seçim varsa showSelected'a geç
                     if (selectedIds.size > 0) {
                         currentMode = "showSelected";
                     } else {
@@ -527,16 +578,18 @@
         };
     }
 
-    function renderCard(bench, isSelectedFlag, showTick = true) {
+    function renderCard(bench, isSelectedFlag, showTick = true, showTime = false) {
         const selectedClass = isSelectedFlag ? "selected" : "";
         const tickHtml = (isSelectedFlag && showTick) ? `<div class="check-mark">✓</div>` : "";
         const icon = "🔧";
+        const timeHtml = (showTime && bench.benchId) ? `<div class="click-time">${getFormattedClickTime(bench.benchId)}</div>` : "";
         
         return `
             <div class="bench-card ${selectedClass}" data-name="${bench.name}" data-id="${bench.benchId}" data-selectable="${bench.selectable}">
                 ${tickHtml}
                 <div class="bench-icon">${icon}</div>
                 <div class="bench-name">${bench.name}</div>
+                ${timeHtml}
             </div>
         `;
     }
@@ -580,7 +633,17 @@
                         return;
                     }
                     const url = BASE_URL + bench.benchId;
-                    openLink(url);
+                    openLink(url, bench.benchId);
+                    // Zaman etiketini güncelle
+                    const timeDiv = card.querySelector('.click-time');
+                    if (timeDiv) {
+                        timeDiv.innerText = getFormattedClickTime(bench.benchId);
+                    } else {
+                        const newTimeDiv = document.createElement('div');
+                        newTimeDiv.className = 'click-time';
+                        newTimeDiv.innerText = getFormattedClickTime(bench.benchId);
+                        card.appendChild(newTimeDiv);
+                    }
                 }
             };
         });
@@ -623,7 +686,7 @@
             });
             
             const allBenches = [...benchesMaster];
-            dashboard.innerHTML = `<div class="bench-grid">${allBenches.map(b => renderCard(b, isSelected(b, false), true)).join('')}</div>`;
+            dashboard.innerHTML = `<div class="bench-grid">${allBenches.map(b => renderCard(b, isSelected(b, false), true, false)).join('')}</div>`;
             attachCardEvents("edit");
         }
         else if (currentMode === "showSelected") {
@@ -652,7 +715,8 @@
             if (selectedBenches.length === 0) {
                 dashboard.innerHTML = `<div style="text-align:center; color:#aaa;">Henüz seçili tezgah yok. Ana ekrandan seçim yapın.</div>`;
             } else {
-                dashboard.innerHTML = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true)).join('')}</div>`;
+                // Mod 2'de zaman etiketi göster (showTime = true)
+                dashboard.innerHTML = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true, true)).join('')}</div>`;
                 attachCardEvents("showSelected");
             }
         }
@@ -690,13 +754,13 @@
             const unselectedBenches = benchesMaster.filter(b => !isSelected(b, true) && b.selectable);
             const ts1Bench = benchesMaster.find(b => b.name === "TS1");
             
-            let html = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true)).join('')}</div>`;
+            let html = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true, false)).join('')}</div>`;
             if (unselectedBenches.length > 0 || (ts1Bench && !ts1Bench.selectable)) {
                 html += `<div class="divider"></div>`;
                 html += `<div class="section-title">📌 Seçilmemiş Tezgahlar</div>`;
                 const unselectedList = [...unselectedBenches];
                 if (ts1Bench && !ts1Bench.selectable) unselectedList.push(ts1Bench);
-                html += `<div class="bench-grid">${unselectedList.map(b => renderCard(b, false, false)).join('')}</div>`;
+                html += `<div class="bench-grid">${unselectedList.map(b => renderCard(b, false, false, false)).join('')}</div>`;
             }
             dashboard.innerHTML = html;
             attachCardEvents("showAllWithSplit");
