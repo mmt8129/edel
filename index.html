@@ -7,7 +7,7 @@
     
     <!-- PWA META TAGS -->
     <link rel="manifest" href="/edel/manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#1976D2">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Tezgah Panosu">
@@ -21,7 +21,7 @@
         }
 
         body {
-            background: #000000;
+            background: #ffffff;
             min-height: 100vh;
             padding: 0;
         }
@@ -30,7 +30,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: #000000;
+            background: #1976D2;
             border-bottom: 3px solid #ffffff;
             padding: 1rem 1.5rem;
         }
@@ -60,7 +60,7 @@
         .stats-area {
             display: flex;
             gap: 1.5rem;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
             padding: 0.4rem 1rem;
             border-radius: 40px;
             font-size: 0.8rem;
@@ -73,7 +73,7 @@
 
         .stats-area .count {
             font-weight: 700;
-            color: #3498db;
+            color: #ffffff;
             margin-left: 0.3rem;
         }
 
@@ -132,27 +132,29 @@
             margin-bottom: 2rem;
         }
 
+        /* Normal kart (seçili değil) - Mavi zemin */
         .bench-card {
-            background: #1a1a1a;
+            background: #1976D2;
             border-radius: 1.2rem;
             padding: 1.2rem 0.8rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            border: 2px solid #e74c3c;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 2px solid #1976D2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
             user-select: none;
-            color: #e74c3c;
+            color: #ffffff;
         }
 
         .bench-card:active {
             transform: translateY(3px);
         }
 
+        /* Seçili kart - Kırmızı zemin (tasfiye kırmızısı) */
         .bench-card.selected {
-            background: #2e7d32;
-            border-color: #4caf50;
+            background: #b91c1c;
+            border-color: #b91c1c;
             color: white;
         }
 
@@ -171,7 +173,7 @@
             font-size: 1.4rem;
             font-weight: bold;
             color: white;
-            text-shadow: 0 0 2px #000;
+            text-shadow: 0 0 2px rgba(0,0,0,0.3);
         }
 
         /* Sağ alt köşe zaman etiketi */
@@ -180,8 +182,8 @@
             bottom: 6px;
             right: 10px;
             font-size: 0.65rem;
-            color: rgba(255,255,255,0.7);
-            background: rgba(0,0,0,0.5);
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.3);
             padding: 2px 6px;
             border-radius: 12px;
             font-weight: 400;
@@ -190,7 +192,7 @@
 
         .bench-card.selected .click-time {
             color: rgba(255,255,255,0.9);
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.3);
         }
 
         .bench-icon {
@@ -203,22 +205,22 @@
             font-size: 1.3rem;
             font-weight: 700;
             letter-spacing: 1px;
-            color: #e74c3c;
+            color: #ffffff;
         }
 
         .divider {
             margin: 2rem 0 1rem 0;
-            border-top: 3px solid white;
+            border-top: 3px solid #1976D2;
             width: 100%;
         }
 
         .section-title {
-            color: #ccc;
+            color: #1976D2;
             font-size: 1.2rem;
             font-weight: 600;
             margin: 1rem 0 1.5rem 0;
             text-align: left;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid #1976D2;
             padding-left: 1rem;
         }
 
@@ -313,6 +315,7 @@
             }
         }
 
+        /* Modal - Beyaz zemin */
         .confirm-modal-overlay {
             position: fixed;
             top: 0;
@@ -326,19 +329,22 @@
             z-index: 1100;
         }
         .confirm-modal-container {
-            background: #1e1e1e;
+            background: #ffffff;
             border-radius: 1.5rem;
             padding: 1.8rem;
             max-width: 340px;
             width: 80%;
             text-align: center;
             box-shadow: 0 20px 30px rgba(0,0,0,0.5);
-            border: 1px solid #444;
+            border: 1px solid #e0e0e0;
         }
         .confirm-modal-container p {
-            color: white;
+            color: #333333;
             margin-bottom: 1.8rem;
             font-size: 1rem;
+        }
+        .confirm-modal-container p strong {
+            color: #1976D2;
         }
         .confirm-modal-buttons {
             display: flex;
@@ -689,37 +695,37 @@
             dashboard.innerHTML = `<div class="bench-grid">${allBenches.map(b => renderCard(b, isSelected(b, false), true, false)).join('')}</div>`;
             attachCardEvents("edit");
         }
-        else if (currentMode === "showSelected") {
-            buttonGroup.innerHTML = `
-                <button class="btn" id="btnShowAllBenches">Tüm Tezgahları Göster</button>
-                <button class="btn btn-danger" id="btnResetAllMode2">Sıfırla</button>
-            `;
-            document.getElementById('btnShowAllBenches')?.addEventListener('click', () => {
-                pendingChanges.clear();
-                selectedIds.forEach(id => pendingChanges.add(id));
-                currentMode = "showAllWithSplit";
-                updateStats();
-                render();
-            });
-            document.getElementById('btnResetAllMode2')?.addEventListener('click', () => {
-                showConfirmModal("Sıfırla", "Tüm seçimler silinecek ve ana ekrana dönülecek. Onaylıyor musunuz?", () => {
-                    clearAll();
-                    currentMode = "edit";
-                    saveToStorage();
-                    updateStats();
-                    render();
-                });
-            });
-            
-            const selectedBenches = benchesMaster.filter(b => isSelected(b, false));
-            if (selectedBenches.length === 0) {
-                dashboard.innerHTML = `<div style="text-align:center; color:#aaa;">Henüz seçili tezgah yok. Ana ekrandan seçim yapın.</div>`;
-            } else {
-                // Mod 2'de zaman etiketi göster (showTime = true)
-                dashboard.innerHTML = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, true, true, true)).join('')}</div>`;
-                attachCardEvents("showSelected");
-            }
-        }
+else if (currentMode === "showSelected") {
+    buttonGroup.innerHTML = `
+        <button class="btn" id="btnShowAllBenches">Tüm Tezgahları Göster</button>
+        <button class="btn btn-danger" id="btnResetAllMode2">Sıfırla</button>
+    `;
+    document.getElementById('btnShowAllBenches')?.addEventListener('click', () => {
+        pendingChanges.clear();
+        selectedIds.forEach(id => pendingChanges.add(id));
+        currentMode = "showAllWithSplit";
+        updateStats();
+        render();
+    });
+    document.getElementById('btnResetAllMode2')?.addEventListener('click', () => {
+        showConfirmModal("Sıfırla", "Tüm seçimler silinecek ve ana ekrana dönülecek. Onaylıyor musunuz?", () => {
+            clearAll();
+            currentMode = "edit";
+            saveToStorage();
+            updateStats();
+            render();
+        });
+    });
+    
+    const selectedBenches = benchesMaster.filter(b => isSelected(b, false));
+    if (selectedBenches.length === 0) {
+        dashboard.innerHTML = `<div style="text-align:center; color:#1976D2; padding: 40px;">Henüz seçili tezgah yok. Ana ekrandan seçim yapın.</div>`;
+    } else {
+        // Mod 2'de kartlar MAVİ (selected=false ile render ediliyor, showTick=true, showTime=true)
+        dashboard.innerHTML = `<div class="bench-grid">${selectedBenches.map(b => renderCard(b, false, true, true)).join('')}</div>`;
+        attachCardEvents("showSelected");
+    }
+}
         else if (currentMode === "showAllWithSplit") {
             buttonGroup.innerHTML = `
                 <button class="btn" id="btnSaveMode3">Kaydet</button>
